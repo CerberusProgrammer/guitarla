@@ -17,13 +17,19 @@ function App() {
       setCart(updatedCart);
     } else {
       item.quantity = 1;
-      setCart([...prevCart, item]);
+      setCart([...cart, item]);
     }
+
+    console.table(cart);
+  }
+
+  function removeFromCart(guitarID) {
+    setCart((prevCart) => prevCart.filter((guitar) => guitar.id !== guitarID));
   }
 
   return (
     <>
-      <Header></Header>
+      <Header cart={cart} removeFromCart={removeFromCart}></Header>
 
       <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
