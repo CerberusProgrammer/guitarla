@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "./components/Header";
 import { Guitar } from "./components/Guitar";
 import { db } from "./data/db";
@@ -7,6 +7,10 @@ import { db } from "./data/db";
 function App() {
   const [data, setData] = useState(db);
   const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   function addToCart(item) {
     const itemExists = cart.findIndex((guitar) => guitar.id === item.id);
@@ -21,15 +25,57 @@ function App() {
     }
 
     console.table(cart);
+    saveLocalStorage();
   }
 
   function removeFromCart(guitarID) {
     setCart((prevCart) => prevCart.filter((guitar) => guitar.id !== guitarID));
   }
 
+  function increaseQuantityInCar(guitarID) {
+    const updatedCart = cart.map((item) => {
+      if (item.id === guitarID) {
+        item.quantity = item.quantity + 1;
+        return item;
+      }
+
+      return item;
+    });
+    setCart(updatedCart);
+  }
+
+  function decreaseQuantityInCar(guitarID) {
+    const updatedCart = cart.map((item) => {
+      if (item.id === guitarID) {
+        if (item.quantity !== 1) {
+          item.quantity = item.quantity - 1;
+
+          return item;
+        }
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+  }
+
+  function clearCart() {
+    setCart([]);
+  }
+
+  function saveLocalStorage() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
   return (
     <>
-      <Header cart={cart} removeFromCart={removeFromCart}></Header>
+      <Header
+        cart={cart}
+        removeFromCart={removeFromCart}
+        increaseQuantity={increaseQuantityInCar}
+        decreaseQuantity={decreaseQuantityInCar}
+        clearCart={clearCart}
+      ></Header>
 
       <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
